@@ -57,7 +57,9 @@ class PageParser(object):
         return match
 
     def extract_sizes(self):
-        match_re = re.compile("<span class=\"size-title\">(\d+)")
+        match_re = re.compile(
+            "<tr class=\"catalog_size_count \"><td><span class=\"size-title\">(\d+)"
+        )
         return match_re.findall(self._page_source)
 
     def extract_price(self):
