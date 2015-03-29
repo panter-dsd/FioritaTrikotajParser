@@ -23,12 +23,12 @@ class PageParser(object):
         with urllib.request.urlopen(self._page_url) as f:
             result = f.read().decode("utf-8")
 
-        return result
+        return result.replace("&quot;", "\"")
 
     def extract_name(self):
         name_re = re.compile("<h1 itemprop=\"name\">(.*)</h1>")
         match = name_re.findall(self._page_source)
-        return match[0].replace("&quot;", "\"") if match else str()
+        return match[0] if match else str()
 
     def extract_description(self):
         h3str = "<h3>Описание товара</h3><p>"
@@ -46,7 +46,7 @@ class PageParser(object):
         start_index = self._page_source.index(begin_group_str)
         end_index = self._page_source.index(end_group_str, start_index)
 
-        match_re = re.compile("<option value=\"\d+\">(\w+)</option>")
+        match_re = re.compile("<option value=\"\d+\">([\w+\s\",-]+)</option>")
 
         match = match_re.findall(self._page_source, start_index, end_index)
 
