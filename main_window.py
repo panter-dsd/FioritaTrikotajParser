@@ -29,6 +29,7 @@ class MainWindow(QtGui.QMainWindow):
         page_parser = PageParser(self._url_edit.text())
 
         self._text_view.clear()
+        self._text_view.appendPlainText(page_parser.page_url())
         self._text_view.appendPlainText(page_parser.extract_name())
         self._text_view.appendPlainText("Состав: "
                                         + page_parser.extract_description())

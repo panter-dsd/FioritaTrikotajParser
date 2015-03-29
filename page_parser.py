@@ -17,6 +17,9 @@ class PageParser(object):
         print(self.extract_sizes())
         print(self.extract_price())
 
+    def page_url(self):
+        return self._page_url
+
     def _get_page_source(self):
         result = str()
 
