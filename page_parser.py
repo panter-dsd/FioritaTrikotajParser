@@ -82,8 +82,12 @@ class PageParser(object):
 
     def _remove_span(self, text: str):
         result = text
-        start_index = result.index("<span")
-        end_index = result.index(">", start_index)
+        try:
+            start_index = result.index("<span")
+            end_index = result.index(">", start_index)
+        except(ValueError):
+            start_index = -1
+            end_index = -1
 
         if (start_index >= 0) and (end_index > 0):
             result = result[:start_index] + result[end_index + 1:]
