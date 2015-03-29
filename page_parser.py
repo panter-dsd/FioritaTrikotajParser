@@ -30,8 +30,17 @@ class PageParser(object):
 
     def extract_name(self):
         name_re = re.compile("<h1 itemprop=\"name\">(.*)</h1>")
+        remove_re = re.compile("F\w+ \d+ ")
         match = name_re.findall(self._page_source)
-        return match[0] if match else str()
+
+        result = match[0] if match else str()
+
+        if result:
+            remove_match = remove_re.search(result)
+            result = result[:remove_match.start()] \
+                     + result[remove_match.end():]
+
+        return result
 
     def extract_description(self):
         h3str = "<h3>Описание товара</h3><p>"
