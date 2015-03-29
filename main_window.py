@@ -30,7 +30,8 @@ class MainWindow(QtGui.QMainWindow):
 
         self._text_view.clear()
         self._text_view.appendPlainText(page_parser.extract_name())
-        self._text_view.appendPlainText("Состав: " + page_parser.extract_description())
+        self._text_view.appendPlainText("Состав: "
+                                        + page_parser.extract_description())
 
         color_string = ", ".join(page_parser.extract_colors())
         self._text_view.appendPlainText("Цвет: " + color_string)
@@ -38,4 +39,6 @@ class MainWindow(QtGui.QMainWindow):
         sizes_string = ", ".join(page_parser.extract_sizes())
         self._text_view.appendPlainText("Размер: " + sizes_string)
 
-        self._text_view.appendPlainText("Цена: " + page_parser.extract_price() + "р. + 15% орг. сбор")
+        self._text_view.appendPlainText("Цена: "
+                                        + page_parser.extract_price()
+                                        + "р.")
