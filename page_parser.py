@@ -26,7 +26,7 @@ class PageParser(object):
         with urllib.request.urlopen(self._page_url) as f:
             result = f.read().decode("utf-8")
 
-        return result.replace("&quot;", "\"")
+        return result.replace("&quot;", "\"").replace("&nbsp;", " ")
 
     def extract_name(self):
         name_re = re.compile("<h1 itemprop=\"name\">(.*)</h1>")
