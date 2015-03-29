@@ -51,3 +51,4 @@ class MainWindow(QtGui.QMainWindow):
         self._text_view.appendPlainText("Цена: "
                                         + page_parser.extract_price()
                                         + "р.")
+        QtGui.QApplication.clipboard().setText(self._text_view.toPlainText())
