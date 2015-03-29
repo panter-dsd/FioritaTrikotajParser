@@ -37,8 +37,9 @@ class PageParser(object):
 
         if result:
             remove_match = remove_re.search(result)
-            result = result[:remove_match.start()] \
-                     + result[remove_match.end():]
+            if remove_match:
+                result = result[:remove_match.start()] \
+                         + result[remove_match.end():]
 
         return result
 
@@ -50,7 +51,15 @@ class PageParser(object):
 
         end_index = self._page_source.index("</p>", start_index)
 
-        return self._page_source[start_index:end_index]
+        result = self._page_source[start_index:end_index]
+
+        remove_re = re.compile("<.*span[\w\s\"=:\(,\);\-\.]*>")
+        if result:
+            remove_match = remove_re.search(result)
+            if remove_match:
+                result = result[:remove_match.start()] \
+                         + result[remove_match.end():]
+        return result.replace("<br />", "").split("\n")[0]
 
     def extract_colors(self):
         begin_group_str = "<select id=\"select_color"
@@ -67,7 +76,7 @@ class PageParser(object):
 
     def extract_sizes(self):
         match_re = re.compile(
-            "<tr class=\"catalog_size_count \"><td><span class=\"size-title\">(\d+)"
+            "<tr class=\"catalog_size_count \"><td><span class=\"size-title\">([\d*]+)"
         )
         return match_re.findall(self._page_source)
 
