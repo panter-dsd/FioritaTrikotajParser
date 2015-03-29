@@ -53,12 +53,8 @@ class PageParser(object):
 
         result = self._page_source[start_index:end_index]
 
-        remove_re = re.compile("<.*span[\w\s\"=:\(,\);\-\.]*>")
         if result:
-            remove_match = remove_re.search(result)
-            if remove_match:
-                result = result[:remove_match.start()] \
-                         + result[remove_match.end():]
+            result = self._remove_span(result)
         return result.replace("<br />", "").split("\n")[0]
 
     def extract_colors(self):
@@ -83,3 +79,12 @@ class PageParser(object):
     def extract_price(self):
         match_re = re.compile("<td>(\d+) <span class=\"rub\">a</span>")
         return match_re.findall(self._page_source)[0]
+
+    def _remove_span(self, text: str):
+        result = text
+        start_index = result.index("<span")
+        end_index = result.index(">", start_index)
+
+        if (start_index >= 0) and (end_index > 0):
+            result = result[:start_index] + result[end_index + 1:]
+        return result.replace("</span>", "")
