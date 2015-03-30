@@ -5,7 +5,7 @@ __author__ = 'konnov@simicon.com'
 from PyQt4 import QtCore, QtGui
 
 from page_parser import PageParser
-
+from love_bunny_parser import LoveBunnyParser
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
@@ -29,13 +29,22 @@ class MainWindow(QtGui.QMainWindow):
 
         self.setCentralWidget(central_widget)
 
+        self._love_bunny = None
+
     def on_paste(self):
         self._url_edit.setText(QtGui.QApplication.clipboard().text())
         self.work()
 
     def work(self):
-        page_parser = PageParser(self._url_edit.text())
+        url = self._url_edit.text()
+        if "fiorita-trikotaj.ru" in url:
+            self._work_fiorita(url)
 
+        if "optom.love-bunny.ru" in url:
+            self._work_love_bunny(url)
+
+    def _work_fiorita(self, url: str):
+        page_parser = PageParser(url)
         self._text_view.clear()
         self._text_view.appendPlainText(page_parser.page_url())
         self._text_view.appendPlainText(page_parser.extract_name())
@@ -50,5 +59,25 @@ class MainWindow(QtGui.QMainWindow):
 
         self._text_view.appendPlainText("Цена: "
                                         + page_parser.extract_price()
+                                        + "р.")
+        QtGui.QApplication.clipboard().setText(self._text_view.toPlainText())
+
+    def _work_love_bunny(self, url):
+        if not self._love_bunny:
+            self._love_bunny = LoveBunnyParser(url)
+            self._love_bunny.finished.connect(self._parse_love_bunny)
+        else:
+            self._love_bunny.set_url(url)
+
+    def _parse_love_bunny(self):
+        self._text_view.clear()
+        self._text_view.appendPlainText(self._love_bunny.page_url())
+        self._text_view.appendPlainText(self._love_bunny.extract_name())
+        print(self._love_bunny.extract_sizes())
+        sizes_string = ", ".join(self._love_bunny.extract_sizes())
+        self._text_view.appendPlainText("Размер: " + sizes_string)
+
+        self._text_view.appendPlainText("Цена: "
+                                        + self._love_bunny.extract_price()
                                         + "р.")
         QtGui.QApplication.clipboard().setText(self._text_view.toPlainText())

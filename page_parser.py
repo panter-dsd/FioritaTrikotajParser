@@ -80,12 +80,13 @@ class PageParser(object):
         match_re = re.compile("<td>(\d+) <span class=\"rub\">a</span>")
         return match_re.findall(self._page_source)[0]
 
-    def _remove_span(self, text: str):
+    @staticmethod
+    def _remove_span(text: str):
         result = text
         try:
             start_index = result.index("<span")
             end_index = result.index(">", start_index)
-        except(ValueError):
+        except ValueError:
             start_index = -1
             end_index = -1
 
