@@ -1,64 +1,17 @@
 # -*- coding: utf-8 -*-
 __author__ = 'konnov@simicon.com'
 
-from PyQt4 import QtCore, QtWebKit, QtNetwork
 import re
-import os
 
 
-class LoveBunnyParser(QtCore.QObject):
-    finished = QtCore.pyqtSignal()
-
-    def __init__(self, page_url: str):
+class LoveBunnyParser(object):
+    def __init__(self):
         super().__init__()
 
-        self._page_url = page_url
-        if not page_url:
-            return
-
-        self._cooki_jar = QtNetwork.QNetworkCookieJar()
-
-        path = os.path.dirname(os.path.realpath(__file__)) + "/cookie/"
-        cookies = []
-        for file_name in os.listdir(path):
-            with open(path + file_name, 'r') as f:
-                name = QtCore.QByteArray(file_name)
-                cookie = QtCore.QByteArray(f.read())
-                cookies.append(QtNetwork.QNetworkCookie(name, cookie))
-        print(len(cookies))
-        self._cooki_jar.setAllCookies(cookies)
-
-        self._web_view = QtWebKit.QWebView()
-        self._web_view.page().networkAccessManager().setCookieJar(self._cooki_jar)
-        self._web_view.loadFinished.connect(self._on_load_finished)
-        self._web_view.setUrl(QtCore.QUrl(self._page_url))
-        self._web_view.show()
-
-    def page_url(self):
-        return self._page_url
-
-    def set_url(self, url: str):
-        self._page_url = url
-        self._web_view.setUrl(QtCore.QUrl(self._page_url))
+        self._page_source = str()
 
     def set_page_source(self, text: str):
         self._page_source = text
-
-    def _on_load_finished(self):
-        print("On load finished")
-        self._page_source = self._web_view.page().mainFrame().toHtml()
-        #print(self._page_source)
-        self.finished.emit()
-
-        try:
-            os.mkdir("cookie")
-        except:
-            pass
-
-        for cooki in self._cooki_jar.allCookies():
-            with open("cookie/" + cooki.name().data().decode("utf-8"), "wb") as f:
-                f.write(cooki.value())
-
 
     def extract_name(self):
         h3str = "<h3>"
@@ -74,27 +27,17 @@ class LoveBunnyParser(QtCore.QObject):
             result = self._remove_font(result)
         return result
 
-
     def extract_description(self):
         return str()
-
 
     def extract_colors(self):
         return []
 
-
     def extract_sizes(self):
-        match_re_0 = re.compile(
-            "<option class=\"0\" value=\"\d+\" data-o-val=\"\d+\" ?>(\d+)</option>"
+        match_re = re.compile(
+            "<option class=\"0\" value=\"\d+\" data-o-val=\"\d+\" ?>([\d\w\(\)]+)<\/option>"
         )
-        match_re_1 = re.compile(
-            "<option class=\"0\" value=\"\d+\" data-o-val=\"\d+\" ?>(\w+\(\d+\))<\/option>"
-        )
-        result = match_re_0.findall(self._page_source)
-        if not result:
-            result = match_re_1.findall(self._page_source)
-
-        return result
+        return match_re.findall(self._page_source)
 
     def extract_price(self):
         start_text = "<span class=\"item_price\">"
@@ -142,5 +85,5 @@ class LoveBunnyParser(QtCore.QObject):
             result = result[:start_index] + result[end_index + 1:]
         return result.replace("</font>", "")
 
-#koshka_as
-#12m12m12
+        # koshka_as
+        # 12m12m12

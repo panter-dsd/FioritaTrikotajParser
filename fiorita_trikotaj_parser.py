@@ -1,32 +1,20 @@
 # -*- coding: utf-8 -*-
 __author__ = 'konnov@simicon.com'
 
-import urllib.request
 import re
 
-class PageParser(object):
-    def __init__(self, page_url: str):
+
+class FioritaTrikotajParser(object):
+    def __init__(self):
         super().__init__()
 
-        self._page_url = page_url
-        self._page_source = self._get_page_source()
+        self._page_source = str()
 
-        print(self.extract_name())
-        print(self.extract_description())
-        print(self.extract_colors())
-        print(self.extract_sizes())
-        print(self.extract_price())
+    def set_page_source(self, text: str):
+        self._page_source = text
 
-    def page_url(self):
-        return self._page_url
-
-    def _get_page_source(self):
-        result = str()
-
-        with urllib.request.urlopen(self._page_url) as f:
-            result = f.read().decode("utf-8")
-
-        return result.replace("&quot;", "\"").replace("&nbsp;", " ")
+        self._page_source = self._page_source.replace("&quot;", "\"").replace(
+            "&nbsp;", " ")
 
     def extract_name(self):
         name_re = re.compile("<h1 itemprop=\"name\">(.*)</h1>")
