@@ -18,6 +18,7 @@ class LoveBunnyParser(QtCore.QObject):
         self._web_view = QtWebKit.QWebView()
         self._web_view.loadFinished.connect(self._on_load_finished)
         self._web_view.setUrl(QtCore.QUrl(self._page_url))
+        self._web_view.show()
 
     def page_url(self):
         return self._page_url
@@ -33,12 +34,7 @@ class LoveBunnyParser(QtCore.QObject):
         print("On load finished")
         self._page_source = self._web_view.page().mainFrame().toHtml()
         print(self._page_source)
-        if ("Вам запрещено просматривать данный раздел" in self._page_source)\
-                or ("Вам нужно зарегистрироваться" in self._page_source):
-            self._web_view.show()
-        else:
-            self._web_view.hide()
-            self.finished.emit()
+        self.finished.emit()
 
 
     def extract_name(self):
@@ -108,3 +104,5 @@ class LoveBunnyParser(QtCore.QObject):
             result = result[:start_index] + result[end_index + 1:]
         return result.replace("</font>", "")
 
+#koshka_as
+#12m12m12
