@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 __author__ = 'konnov@simicon.com'
 
-from PyQt4 import QtCore, QtWebKit
+from PyQt4 import QtCore, QtWebKit, QtNetwork
 import re
+import os
 
 
 class LoveBunnyParser(QtCore.QObject):
@@ -15,7 +16,20 @@ class LoveBunnyParser(QtCore.QObject):
         if not page_url:
             return
 
+        self._cooki_jar = QtNetwork.QNetworkCookieJar()
+
+        path = os.path.dirname(os.path.realpath(__file__)) + "/cookie/"
+        cookies = []
+        for file_name in os.listdir(path):
+            with open(path + file_name, 'r') as f:
+                name = QtCore.QByteArray(file_name)
+                cookie = QtCore.QByteArray(f.read())
+                cookies.append(QtNetwork.QNetworkCookie(name, cookie))
+        print(len(cookies))
+        self._cooki_jar.setAllCookies(cookies)
+
         self._web_view = QtWebKit.QWebView()
+        self._web_view.page().networkAccessManager().setCookieJar(self._cooki_jar)
         self._web_view.loadFinished.connect(self._on_load_finished)
         self._web_view.setUrl(QtCore.QUrl(self._page_url))
         self._web_view.show()
@@ -35,6 +49,15 @@ class LoveBunnyParser(QtCore.QObject):
         self._page_source = self._web_view.page().mainFrame().toHtml()
         print(self._page_source)
         self.finished.emit()
+
+        try:
+            os.mkdir("cookie")
+        except:
+            pass
+
+        for cooki in self._cooki_jar.allCookies():
+            with open("cookie/" + cooki.name().data().decode("utf-8"), "wb") as f:
+                f.write(cooki.value())
 
 
     def extract_name(self):
@@ -61,20 +84,35 @@ class LoveBunnyParser(QtCore.QObject):
 
 
     def extract_sizes(self):
-        match_re = re.compile(
+        match_re_0 = re.compile(
             "<option class=\"0\" value=\"\d+\" data-o-val=\"\d+\" ?>(\d+)</option>"
         )
-        return match_re.findall(self._page_source)
+        match_re_1 = re.compile(
+            "<option class=\"0\" value=\"\d+\" data-o-val=\"\d+\" ?>(\w+\(\d+\))<\/option>"
+        )
+        result = match_re_0.findall(self._page_source)
+        if not result:
+            result = match_re_1.findall(self._page_source)
 
+        return result
 
     def extract_price(self):
         start_text = "<span class=\"item_price\">"
-        start_index = self._page_source.index(start_text) + len(start_text)
-        end_index = self._page_source.index("</span>", start_index)
-        result = self._page_source[start_index:end_index]
-        result = self._remove_span(result)
-        match_re = re.compile("\d+.\d+")
-        return match_re.findall(result)[0]
+        try:
+            start_index = self._page_source.index(start_text) + len(start_text)
+            end_index = self._page_source.index("</span>", start_index)
+            result = self._page_source[start_index:end_index]
+            result = self._remove_span(result)
+            match_re = re.compile("\d+.\d+")
+            return match_re.findall(result)[0]
+        except:
+            return str()
+
+    def extract_image_url(self):
+        match_re = re.compile(
+            "url\((http:\/\/optom\.love-bunny\.ru\/_sh\/\d+\/\d+.jpg)"
+        )
+        return match_re.findall(self._page_source)[0]
 
     @staticmethod
     def _remove_span(text: str):

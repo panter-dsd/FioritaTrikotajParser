@@ -3,6 +3,7 @@ __author__ = 'konnov@simicon.com'
 
 
 from PyQt4 import QtCore, QtGui
+import urllib
 
 from page_parser import PageParser
 from love_bunny_parser import LoveBunnyParser
@@ -19,10 +20,13 @@ class MainWindow(QtGui.QMainWindow):
 
         self._text_view = QtGui.QPlainTextEdit(self)
 
+        self._image = QtGui.QLabel(self)
+
         layout = QtGui.QVBoxLayout()
         layout.addWidget(self._paste_button)
         layout.addWidget(self._url_edit)
         layout.addWidget(self._text_view)
+        layout.addWidget(self._image)
 
         central_widget = QtGui.QWidget(self)
         central_widget.setLayout(layout)
@@ -81,3 +85,13 @@ class MainWindow(QtGui.QMainWindow):
                                         + self._love_bunny.extract_price()
                                         + "р.")
         QtGui.QApplication.clipboard().setText(self._text_view.toPlainText())
+
+        print("!!!" + self._love_bunny.extract_image_url())
+        with urllib.request.urlopen(self._love_bunny.extract_image_url()) as f:
+            image_data = f.read()
+            if image_data:
+                image = QtGui.QImage()
+                image.loadFromData(image_data, "JPG")
+                QtGui.QApplication.clipboard().setImage(image)
+                image = image.scaledToHeight(100, QtCore.Qt.SmoothTransformation)
+                self._image.setPixmap(QtGui.QPixmap.fromImage(image))
