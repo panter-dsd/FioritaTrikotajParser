@@ -75,7 +75,6 @@ class MainWindow(QtGui.QMainWindow):
 
     def _parse_love_bunny(self):
         self._text_view.clear()
-        self._text_view.appendPlainText(self._love_bunny.page_url())
         self._text_view.appendPlainText(self._love_bunny.extract_name())
         print(self._love_bunny.extract_sizes())
         sizes_string = ", ".join(self._love_bunny.extract_sizes())
@@ -86,7 +85,6 @@ class MainWindow(QtGui.QMainWindow):
                                         + "р.")
         QtGui.QApplication.clipboard().setText(self._text_view.toPlainText())
 
-        print("!!!" + self._love_bunny.extract_image_url())
         with urllib.request.urlopen(self._love_bunny.extract_image_url()) as f:
             image_data = f.read()
             if image_data:

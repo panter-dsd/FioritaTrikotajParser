@@ -47,7 +47,7 @@ class LoveBunnyParser(QtCore.QObject):
     def _on_load_finished(self):
         print("On load finished")
         self._page_source = self._web_view.page().mainFrame().toHtml()
-        print(self._page_source)
+        #print(self._page_source)
         self.finished.emit()
 
         try:
