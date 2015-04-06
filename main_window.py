@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 __author__ = 'konnov@simicon.com'
 
-from PyQt4 import QtCore, QtGui, QtWebKit
 import urllib
+
+from PyQt4 import QtCore, QtGui, QtWebKit
 
 from presets_widget import PresetsWidget
 from fiorita_trikotaj_parser import FioritaTrikotajParser
 from love_bunny_parser import LoveBunnyParser
+from vkontakte import Vkontakte
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -42,14 +44,11 @@ class MainWindow(QtGui.QMainWindow):
             self._load_progress.setValue
         )
 
-        self._text_view = QtGui.QPlainTextEdit(self)
-        self._text_view.setMaximumWidth(200)
-
-        self._image = QtGui.QLabel(self)
+        self._vk = Vkontakte(self)
+        self._vk.setMaximumWidth(200)
 
         left_layout = QtGui.QVBoxLayout()
-        left_layout.addWidget(self._text_view)
-        left_layout.addWidget(self._image)
+        left_layout.addWidget(self._vk)
 
         right_layout = QtGui.QVBoxLayout()
         right_layout.addWidget(self._url_edit)
@@ -65,8 +64,6 @@ class MainWindow(QtGui.QMainWindow):
         central_widget.setLayout(layout)
 
         self.setCentralWidget(central_widget)
-
-        love_bunny = None
 
     def _on_page_load_started(self):
         self._url_edit.setText(self._web_view.url().toString())
@@ -91,46 +88,40 @@ class MainWindow(QtGui.QMainWindow):
         page_parser.set_page_source(
             self._web_view.page().mainFrame().toHtml()
         )
-        self._text_view.clear()
-        self._text_view.appendPlainText(
-            self._web_view.url().toString()
-        )
-        self._text_view.appendPlainText(page_parser.extract_name())
-        self._text_view.appendPlainText("Состав: "
-                                        + page_parser.extract_description())
+
+        comment = []
+        comment.append(self._web_view.url().toString())
+
+        comment.append(page_parser.extract_name())
+        comment.append("Состав: " + page_parser.extract_description())
 
         color_string = ", ".join(page_parser.extract_colors())
-        self._text_view.appendPlainText("Цвет: " + color_string)
+        comment.append("Цвет: " + color_string)
 
         sizes_string = ", ".join(page_parser.extract_sizes())
-        self._text_view.appendPlainText("Размер: " + sizes_string)
+        comment.append("Размер: " + sizes_string)
 
-        self._text_view.appendPlainText("Цена: "
-                                        + page_parser.extract_price()
-                                        + "р.")
-        QtGui.QApplication.clipboard().setText(self._text_view.toPlainText())
+        comment.append("Цена: "
+                       + page_parser.extract_price()
+                       + "р.")
+        self._vk.set_comment("\n".join(comment))
 
     def _work_love_bunny(self):
         love_bunny = LoveBunnyParser()
         love_bunny.set_page_source(self._web_view.page().mainFrame().toHtml())
 
-        self._text_view.clear()
-        self._text_view.appendPlainText(love_bunny.extract_name())
-        print(love_bunny.extract_sizes())
-        sizes_string = ", ".join(love_bunny.extract_sizes())
-        self._text_view.appendPlainText("Размер: " + sizes_string)
+        comment = []
+        comment.append(love_bunny.extract_name())
 
-        self._text_view.appendPlainText("Цена: "
-                                        + love_bunny.extract_price()
-                                        + "р.")
-        QtGui.QApplication.clipboard().setText(self._text_view.toPlainText())
+        sizes_string = ", ".join(love_bunny.extract_sizes())
+        comment.append("Размер: " + sizes_string)
+
+        comment.append("Цена: "
+                       + love_bunny.extract_price()
+                       + "р.")
+        self._vk.set_comment("\n".join(comment))
 
         with urllib.request.urlopen(love_bunny.extract_image_url()) as f:
             image_data = f.read()
             if image_data:
-                image = QtGui.QImage()
-                image.loadFromData(image_data, "JPG")
-                QtGui.QApplication.clipboard().setImage(image)
-                image = image.scaledToHeight(100,
-                                             QtCore.Qt.SmoothTransformation)
-                self._image.setPixmap(QtGui.QPixmap.fromImage(image))
+                self._vk.set_image(image_data)
