@@ -106,6 +106,10 @@ class MainWindow(QtGui.QMainWindow):
                        + "р.")
         self._vk.set_comment("\n".join(comment))
 
+        image_url = page_parser.extract_image_url()
+        if image_url:
+            self._download_image(image_url)
+
     def _work_love_bunny(self):
         love_bunny = LoveBunnyParser()
         love_bunny.set_page_source(self._web_view.page().mainFrame().toHtml())
@@ -121,7 +125,12 @@ class MainWindow(QtGui.QMainWindow):
                        + "р.")
         self._vk.set_comment("\n".join(comment))
 
-        with urllib.request.urlopen(love_bunny.extract_image_url()) as f:
+        image_url = love_bunny.extract_image_url()
+        if image_url:
+            self._download_image(image_url)
+
+    def _download_image(self, url):
+        with urllib.request.urlopen(url) as f:
             image_data = f.read()
             if image_data:
                 self._vk.set_image(image_data)
