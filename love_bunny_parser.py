@@ -10,6 +10,9 @@ class LoveBunnyParser(AbstractParser):
     def __init__(self):
         super().__init__("http://optom.love-bunny.ru")
 
+    def page_url(self) -> str:
+        return str()
+
     def extract_name(self):
         h3str = "<h3>"
         start_index = self.page_source().index(h3str)
@@ -23,12 +26,6 @@ class LoveBunnyParser(AbstractParser):
         if result:
             result = self._remove_font(result)
         return result
-
-    def extract_description(self):
-        return str()
-
-    def extract_colors(self):
-        return []
 
     def extract_sizes(self):
         match_re = re.compile(
