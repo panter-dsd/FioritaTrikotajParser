@@ -48,10 +48,6 @@ class MainWindow(QtGui.QMainWindow):
         )
 
         self._vk = Vkontakte(self)
-        self._vk.setMaximumWidth(200)
-
-        left_layout = QtGui.QVBoxLayout()
-        left_layout.addWidget(self._vk)
 
         right_layout = QtGui.QVBoxLayout()
         right_layout.addWidget(self._url_edit)
@@ -59,14 +55,14 @@ class MainWindow(QtGui.QMainWindow):
         right_layout.addWidget(self._web_view)
         right_layout.addWidget(self._load_progress)
 
-        layout = QtGui.QHBoxLayout()
-        layout.addLayout(left_layout)
-        layout.addLayout(right_layout)
+        self._right_widget = QtGui.QWidget(self)
+        self._right_widget.setLayout(right_layout)
 
-        central_widget = QtGui.QWidget(self)
-        central_widget.setLayout(layout)
+        self._splitter = QtGui.QSplitter(self)
+        self._splitter.addWidget(self._vk)
+        self._splitter.addWidget(self._right_widget)
 
-        self.setCentralWidget(central_widget)
+        self.setCentralWidget(self._splitter)
 
         self._parsers = [
             FioritaTrikotajParser(),
