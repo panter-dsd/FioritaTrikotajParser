@@ -41,3 +41,6 @@ class AbstractParser(object):
 
     def extract_image_url(self) -> str:
         pass
+
+    def extract_minimum_order_quantity(self) -> int:
+        return 1
