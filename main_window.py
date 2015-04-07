@@ -79,7 +79,9 @@ class MainWindow(QtGui.QMainWindow):
         self._url_edit.setEnabled(True)
         self._load_progress.setVisible(False)
 
-        self.work(self._web_view.url().toString())
+        url = self._web_view.url().toString()
+        self._url_edit.setText(url)
+        self.work(url)
 
     def work(self, url: str):
         if self._parsers[0].can_parse(url):
