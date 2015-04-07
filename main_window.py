@@ -96,13 +96,14 @@ class MainWindow(QtGui.QMainWindow):
             self._work_magok()
 
     def _work_fiorita(self):
-        page_parser = FioritaTrikotajParser()
+        page_parser = self._parsers[0]
+        page_parser.set_page_url(self._web_view.url().toString())
         page_parser.set_page_source(
             self._web_view.page().mainFrame().toHtml()
         )
 
         comment = []
-        comment.append(self._web_view.url().toString())
+        comment.append(page_parser.page_url())
 
         comment.append(page_parser.extract_name())
         comment.append("Состав: " + page_parser.extract_description())
@@ -123,40 +124,42 @@ class MainWindow(QtGui.QMainWindow):
             self._download_image(image_url)
 
     def _work_love_bunny(self):
-        love_bunny = LoveBunnyParser()
-        love_bunny.set_page_source(self._web_view.page().mainFrame().toHtml())
+        page_parser = self._parsers[1]
+        page_parser.set_page_url(self._web_view.url().toString())
+        page_parser.set_page_source(self._web_view.page().mainFrame().toHtml())
 
         comment = []
-        comment.append(love_bunny.extract_name())
+        comment.append(page_parser.extract_name())
 
-        sizes_string = ", ".join(love_bunny.extract_sizes())
+        sizes_string = ", ".join(page_parser.extract_sizes())
         comment.append("Размер: " + sizes_string)
 
         comment.append("Цена: "
-                       + love_bunny.extract_price()
+                       + page_parser.extract_price()
                        + "р.")
         self._vk.set_comment("\n".join(comment))
 
-        image_url = love_bunny.extract_image_url()
+        image_url = page_parser.extract_image_url()
         if image_url:
             self._download_image(image_url)
 
     def _work_magok(self):
-        parser = self._parsers[2]
-        parser.set_page_source(self._web_view.page().mainFrame().toHtml())
+        page_parser = self._parsers[2]
+        page_parser.set_page_url(self._web_view.url().toString())
+        page_parser.set_page_source(self._web_view.page().mainFrame().toHtml())
 
         comment = []
-        comment.append(self._web_view.url().toString())
-        comment.append(parser.extract_name())
+        comment.append(page_parser.page_url())
+        comment.append(page_parser.extract_name())
 
-        comment.append("Цена: %s р." % parser.extract_price())
+        comment.append("Цена: %s р." % page_parser.extract_price())
 
-        minimum_order_quantity = parser.extract_minimum_order_quantity()
+        minimum_order_quantity = page_parser.extract_minimum_order_quantity()
         if minimum_order_quantity > 1:
             comment.append("Фасовка: %s шт" % minimum_order_quantity)
         self._vk.set_comment("\n".join(comment))
 
-        image_url = parser.extract_image_url()
+        image_url = page_parser.extract_image_url()
         if image_url:
             self._download_image(image_url)
 
