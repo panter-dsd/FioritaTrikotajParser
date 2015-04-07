@@ -15,11 +15,13 @@ class LoveBunnyParser(AbstractParser):
 
     def extract_name(self):
         h3str = "<h3>"
-        start_index = self.page_source().index(h3str)
 
-        start_index += len(h3str)
-
-        end_index = self.page_source().index("</h3>", start_index)
+        try:
+            start_index = self.page_source().index(h3str)
+            start_index += len(h3str)
+            end_index = self.page_source().index("</h3>", start_index)
+        except ValueError:
+            return str()
 
         result = self.page_source()[start_index:end_index]
 
@@ -38,18 +40,22 @@ class LoveBunnyParser(AbstractParser):
         try:
             start_index = self.page_source().index(start_text) + len(start_text)
             end_index = self.page_source().index("</span>", start_index)
-            result = self.page_source()[start_index:end_index]
-            result = self._remove_span(result)
-            match_re = re.compile("\d+.\d+")
-            return match_re.findall(result)[0]
-        except:
+        except ValueError:
             return str()
+
+        result = self.page_source()[start_index:end_index]
+        result = self._remove_span(result)
+        match_re = re.compile("\d+.\d+")
+        prices = match_re.findall(result)
+        return prices[0] if prices else str()
+
 
     def extract_image_url(self):
         match_re = re.compile(
             "url\((http:\/\/optom\.love-bunny\.ru\/_sh\/\d+\/\d+.jpg)"
         )
-        return match_re.findall(self.page_source())[0]
+        urls = match_re.findall(self.page_source())
+        return urls[0] if urls else str()
 
     @staticmethod
     def _remove_span(text: str):
