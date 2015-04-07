@@ -14,23 +14,10 @@ class Vkontakte(QtGui.QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
+        self._is_auth = False
+
         self._image_data = bytes()
-
-        client_id = "4856961"
-        scopes = "photos,friends,groups,stats"
-
-        self._web_view = QtWebKit.QWebView()
-        self._web_view.setUrl(
-            QtCore.QUrl("https://oauth.vk.com/authorize?"
-                        + "client_id=" + client_id
-                        + "&scope=" + scopes
-                        + "&redirect_uri=https://oauth.vk.com/blank.html"
-                        + "&display=page"
-                        + "&v=5.0"
-                        + "&response_type=token")
-        )
-        self._web_view.show()
-        self._web_view.loadFinished.connect(self._try_read_token)
+        self._image = None
 
         self._group_edit = QtGui.QComboBox(self)
         self._group_edit.activated.connect(self._on_group_changed)
@@ -53,26 +40,48 @@ class Vkontakte(QtGui.QWidget):
 
         self.setLayout(layout)
 
+    @staticmethod
+    def auth_url():
+        client_id = "4856961"
+        scopes = "photos,friends,groups,stats"
+
+        return QtCore.QUrl("https://oauth.vk.com/authorize?"
+                           + "client_id=" + client_id
+                           + "&scope=" + scopes
+                           + "&redirect_uri=https://oauth.vk.com/blank.html"
+                           + "&display=page"
+                           + "&v=5.0"
+                           + "&response_type=token")
+
+    def is_auth(self):
+        return self._is_auth
+
     def set_comment(self, comment: str):
         self._comment_edit.setPlainText(comment)
 
     def set_image(self, image_data: bytes):
         self._image_data = image_data
 
-        image = QtGui.QImage()
-        image.loadFromData(image_data, "JPG")
-        image = image.scaledToWidth(
+        self._image = QtGui.QImage()
+
+        if self._image_data and self._image.loadFromData(image_data, "JPG"):
+            self._update_image_preview()
+        else:
+            self._image = None
+
+    def _update_image_preview(self):
+        image = self._image.scaledToWidth(
             self._image_preview.width(), QtCore.Qt.SmoothTransformation
         )
         self._image_preview.setPixmap(QtGui.QPixmap.fromImage(image))
 
-    def _try_read_token(self):
-        url = self._web_view.url().toString()
+    def try_read_token(self, url: str) -> bool:
         token = re.findall("access_token=(\w+)", url)
         if token:
-            self._web_view.hide()
-            self._web_view.deleteLater()
             self._connect_to_vk(token)
+            self._is_auth = True
+
+        return self._is_auth
 
     def _connect_to_vk(self, token):
         self._vkapi = vk.API(app_id="4856961", access_token=token)

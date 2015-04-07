@@ -48,6 +48,7 @@ class MainWindow(QtGui.QMainWindow):
         )
 
         self._vk = Vkontakte(self)
+        self._web_view.setUrl(QtCore.QUrl(self._vk.auth_url()))
 
         right_layout = QtGui.QVBoxLayout()
         right_layout.addWidget(self._url_edit)
@@ -81,6 +82,12 @@ class MainWindow(QtGui.QMainWindow):
 
         url = self._web_view.url().toString()
         self._url_edit.setText(url)
+
+        if not self._vk.is_auth():
+            if self._vk.try_read_token(url):
+                self._web_view.setUrl(QtCore.QUrl())
+                self._url_edit.clear()
+
         self.work(url)
 
     def work(self, url: str):
