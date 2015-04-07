@@ -8,6 +8,7 @@ from PyQt4 import QtCore, QtGui, QtWebKit
 from presets_widget import PresetsWidget
 from fiorita_trikotaj_parser import FioritaTrikotajParser
 from love_bunny_parser import LoveBunnyParser
+from magok_parser import MagokParser
 from vkontakte import Vkontakte
 
 
@@ -18,6 +19,8 @@ class MainWindow(QtGui.QMainWindow):
         self._web_view = QtWebKit.QWebView(self)
 
         self._url_edit = QtGui.QLineEdit(self)
+        self._url_edit.setText(
+            "http://optom.love-bunny.ru/shop/2784/desc/kurtka-stegannaja-krasnaja")
         self._url_edit.returnPressed.connect(
             lambda: self._web_view.setUrl(
                 QtCore.QUrl.fromUserInput(self._url_edit.text())
@@ -65,6 +68,12 @@ class MainWindow(QtGui.QMainWindow):
 
         self.setCentralWidget(central_widget)
 
+        self._parsers = [
+            FioritaTrikotajParser(),
+            LoveBunnyParser(),
+            MagokParser()
+        ]
+
     def _on_page_load_started(self):
         self._url_edit.setText(self._web_view.url().toString())
         self._url_edit.setEnabled(False)
@@ -77,11 +86,14 @@ class MainWindow(QtGui.QMainWindow):
         self.work(self._web_view.url().toString())
 
     def work(self, url: str):
-        if "fiorita-trikotaj.ru" in url:
+        if self._parsers[0].can_parse(url):
             self._work_fiorita()
 
-        if "optom.love-bunny.ru" in url:
+        if self._parsers[1].can_parse(url):
             self._work_love_bunny()
+
+        if self._parsers[2].can_parse(url):
+            self._work_magok()
 
     def _work_fiorita(self):
         page_parser = FioritaTrikotajParser()
@@ -126,6 +138,25 @@ class MainWindow(QtGui.QMainWindow):
         self._vk.set_comment("\n".join(comment))
 
         image_url = love_bunny.extract_image_url()
+        if image_url:
+            self._download_image(image_url)
+
+    def _work_magok(self):
+        parser = self._parsers[2]
+        parser.set_page_source(self._web_view.page().mainFrame().toHtml())
+
+        comment = []
+        comment.append(self._web_view.url().toString())
+        comment.append(parser.extract_name())
+
+        comment.append("Цена: %s р." % parser.extract_price())
+
+        minimum_order_quantity = parser.extract_minimum_order_quantity()
+        if minimum_order_quantity > 1:
+            comment.append("Фасовка: %s шт" % minimum_order_quantity)
+        self._vk.set_comment("\n".join(comment))
+
+        image_url = parser.extract_image_url()
         if image_url:
             self._download_image(image_url)
 
