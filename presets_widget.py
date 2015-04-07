@@ -16,6 +16,9 @@ class PresetsWidget(QtGui.QWidget):
             ),
             QtGui.QCommandLinkButton(
                 "Fiorita trikotaj", "http://fiorita-trikotaj.ru/", self
+            ),
+            QtGui.QCommandLinkButton(
+                "MAG", "http://magok.ru/", self
             )
         ]
 
