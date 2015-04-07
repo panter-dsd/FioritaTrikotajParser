@@ -7,6 +7,7 @@ class AbstractParser(object):
         super().__init__()
 
         self._main_url = main_url
+        self._page_url = str()
         self._page_source = str()
 
     def can_parse(self, url: str) -> bool:
@@ -14,6 +15,12 @@ class AbstractParser(object):
 
     def main_url(self):
         return self._main_url
+
+    def page_url(self) -> str:
+        return self._page_url
+
+    def set_page_url(self, url: str):
+        self._page_url = url
 
     def page_source(self) -> str:
         return self._page_source
