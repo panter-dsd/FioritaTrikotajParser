@@ -40,7 +40,6 @@ class MainWindow(QtGui.QMainWindow):
         self._web_view.setUrl(QtCore.QUrl(self._vk.auth_url()))
 
         right_layout = QtGui.QVBoxLayout()
-        right_layout.addWidget(self._url_edit)
         right_layout.addWidget(self._web_view)
         right_layout.addWidget(self._load_progress)
 
@@ -60,6 +59,7 @@ class MainWindow(QtGui.QMainWindow):
         ]
 
         self._init_main_menu()
+        self._init_browser_toolbar()
 
     def _init_main_menu(self):
         self._main_menu = QtGui.QMenuBar(self)
@@ -81,6 +81,31 @@ class MainWindow(QtGui.QMainWindow):
             )
 
         return menu
+
+    def _update_web_actions(self):
+        self._go_back_action.setEnabled(
+            self._web_view.page().history().canGoBack()
+        )
+
+    def _init_browser_toolbar(self):
+        self._browser_toolbar = QtGui.QToolBar("Browser bar", self)
+
+        self._go_back_action = QtGui.QAction(
+            self.style().standardIcon(QtGui.QStyle.SP_ArrowBack),
+            "Go back",
+            self
+        )
+        self._go_back_action.setEnabled(False)
+        self._go_back_action.triggered.connect(
+            self._web_view.back
+        )
+
+        self._web_view.loadStarted.connect(self._update_web_actions)
+        self._web_view.loadFinished.connect(self._update_web_actions)
+
+        self._browser_toolbar.addAction(self._go_back_action)
+        self._browser_toolbar.addWidget(self._url_edit)
+        self.addToolBar(self._browser_toolbar)
 
     def _on_page_load_started(self):
         self._url_edit.setText(self._web_view.url().toString())
