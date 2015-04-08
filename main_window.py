@@ -9,6 +9,7 @@ from fiorita_trikotaj_parser import FioritaTrikotajParser
 from love_bunny_parser import LoveBunnyParser
 from magok_parser import MagokParser
 from vkontakte import Vkontakte
+from upload_dialog import UploadDialog
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -43,14 +44,10 @@ class MainWindow(QtGui.QMainWindow):
         right_layout.addWidget(self._web_view)
         right_layout.addWidget(self._load_progress)
 
-        self._right_widget = QtGui.QWidget(self)
-        self._right_widget.setLayout(right_layout)
+        central_widget = QtGui.QWidget(self)
+        central_widget.setLayout(right_layout)
 
-        self._splitter = QtGui.QSplitter(self)
-        self._splitter.addWidget(self._vk)
-        self._splitter.addWidget(self._right_widget)
-
-        self.setCentralWidget(self._splitter)
+        self.setCentralWidget(central_widget)
 
         self._parsers = [
             FioritaTrikotajParser(),
@@ -83,28 +80,15 @@ class MainWindow(QtGui.QMainWindow):
 
         return menu
 
-    def _update_web_actions(self):
-        self._go_back_action.setEnabled(
-            self._web_view.page().history().canGoBack()
-        )
-
     def _init_browser_toolbar(self):
         self._browser_toolbar = QtGui.QToolBar("Browser bar", self)
-
-        self._go_back_action = QtGui.QAction(
-            self.style().standardIcon(QtGui.QStyle.SP_ArrowBack),
-            "Go back",
-            self
-        )
-        self._go_back_action.setEnabled(False)
-        self._go_back_action.triggered.connect(
-            self._web_view.back
+        self._browser_toolbar.addActions(
+            [
+                self._web_view.page().action(QtWebKit.QWebPage.Back),
+                self._web_view.page().action(QtWebKit.QWebPage.Stop)
+            ]
         )
 
-        self._web_view.loadStarted.connect(self._update_web_actions)
-        self._web_view.loadFinished.connect(self._update_web_actions)
-
-        self._browser_toolbar.addAction(self._go_back_action)
         self._browser_toolbar.addWidget(self._url_edit)
         self.addToolBar(self._browser_toolbar)
 
@@ -118,7 +102,27 @@ class MainWindow(QtGui.QMainWindow):
         self._vk_toolbar.addWidget(QtGui.QLabel("Album", self))
         self._vk_toolbar.addWidget(self._vk.album_edit())
 
-        self._vk_toolbar.addAction(self._vk.upload_action())
+        upload_action = self._vk.upload_action()
+        upload_action.triggered.connect(self._upload)
+        self._vk_toolbar.addAction(upload_action)
+
+    def _upload(self):
+        dialog = UploadDialog(self)
+        dialog.set_comment(self._vk.comment())
+        dialog.set_image(self._vk.image())
+
+        if dialog.exec():
+            self._vk.set_comment(dialog.comment())
+            self._vk.set_image(dialog.image())
+            try:
+                self._vk.upload_photo_to_selected_album()
+            except Exception:
+                QtGui.QMessageBox.critical(
+                    self,
+                    "VK",
+                    "Upload timeout error",
+                )
+                QtCore.QTimer.singleShot(0, self._upload)
 
     def _on_page_load_started(self):
         self._url_edit.setText(self._web_view.url().toString())

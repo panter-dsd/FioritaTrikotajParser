@@ -10,7 +10,7 @@ import requests
 import re
 
 
-class Vkontakte(QtGui.QWidget):
+class Vkontakte(QtCore.QObject):
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -19,25 +19,12 @@ class Vkontakte(QtGui.QWidget):
         self._image_data = bytes()
         self._image = None
 
-        self._group_edit = QtGui.QComboBox(self)
+        self._group_edit = QtGui.QComboBox(parent)
         self._group_edit.activated.connect(self._on_group_changed)
 
-        self._album_edit = QtGui.QComboBox(self)
+        self._album_edit = QtGui.QComboBox(parent)
 
-        self._upload_action = QtGui.QAction("Upload", self)
-        self._upload_action.triggered.connect(
-            self._upload_photo_to_selected_album
-        )
-
-        self._comment_edit = QtGui.QPlainTextEdit(self)
-
-        self._image_preview = QtGui.QLabel(self)
-
-        layout = QtGui.QVBoxLayout()
-        layout.addWidget(self._comment_edit)
-        layout.addWidget(self._image_preview)
-
-        self.setLayout(layout)
+        self._upload_action = QtGui.QAction("Upload", parent)
 
     def group_edit(self):
         return self._group_edit
@@ -47,6 +34,18 @@ class Vkontakte(QtGui.QWidget):
 
     def upload_action(self):
         return self._upload_action
+
+    def comment(self):
+        return self._comment
+
+    def set_comment(self, text: str):
+        self._comment = text
+
+    def image(self):
+        return self._image_data
+
+    def set_image(self, image: bytes):
+        self._image_data = image
 
     @staticmethod
     def auth_url():
@@ -63,25 +62,6 @@ class Vkontakte(QtGui.QWidget):
 
     def is_auth(self):
         return self._is_auth
-
-    def set_comment(self, comment: str):
-        self._comment_edit.setPlainText(comment)
-
-    def set_image(self, image_data: bytes):
-        self._image_data = image_data
-
-        self._image = QtGui.QImage()
-
-        if self._image_data and self._image.loadFromData(image_data, "JPG"):
-            self._update_image_preview()
-        else:
-            self._image = None
-
-    def _update_image_preview(self):
-        image = self._image.scaledToWidth(
-            self._image_preview.width(), QtCore.Qt.SmoothTransformation
-        )
-        self._image_preview.setPixmap(QtGui.QPixmap.fromImage(image))
 
     def try_read_token(self, url: str) -> bool:
         token = re.findall("access_token=(\w+)", url)
@@ -125,7 +105,7 @@ class Vkontakte(QtGui.QWidget):
         print(upload_url)
         return upload_url
 
-    def _upload_photo_to_selected_album(self):
+    def upload_photo_to_selected_album(self):
         upload_url = self._get_upload_url()
         if upload_url:
             params = self._upload_photo(upload_url)
@@ -135,7 +115,7 @@ class Vkontakte(QtGui.QWidget):
                                     server=params["server"],
                                     photos_list=params["photos_list"],
                                     hash=params["hash"],
-                                    caption=self._comment_edit.toPlainText())
+                                    caption=self._comment)
 
 
     def _upload_photo(self, url):
