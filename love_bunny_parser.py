@@ -10,6 +10,9 @@ class LoveBunnyParser(AbstractParser):
     def __init__(self):
         super().__init__("http://optom.love-bunny.ru")
 
+    def name(self):
+        return "Love bunny"
+
     def page_url(self) -> str:
         return str()
 

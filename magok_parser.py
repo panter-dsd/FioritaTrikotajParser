@@ -10,6 +10,9 @@ class MagokParser(AbstractParser):
     def __init__(self):
         super().__init__("http://magok.ru")
 
+    def name(self):
+        return "MAG"
+
     def extract_sizes(self) -> list:
         return super().extract_sizes()
 

@@ -9,6 +9,9 @@ class FioritaTrikotajParser(AbstractParser):
     def __init__(self):
         super().__init__("http://fiorita-trikotaj.ru/")
 
+    def name(self):
+        return "Fiorita trikotaj"
+
     def extract_name(self):
         start_str = "<h1 itemprop=\"name\">"
         end_str = "</h1>"
