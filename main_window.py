@@ -60,6 +60,7 @@ class MainWindow(QtGui.QMainWindow):
 
         self._init_main_menu()
         self._init_browser_toolbar()
+        self._init_vk_toolbar()
 
     def _init_main_menu(self):
         self._main_menu = QtGui.QMenuBar(self)
@@ -106,6 +107,18 @@ class MainWindow(QtGui.QMainWindow):
         self._browser_toolbar.addAction(self._go_back_action)
         self._browser_toolbar.addWidget(self._url_edit)
         self.addToolBar(self._browser_toolbar)
+
+    def _init_vk_toolbar(self):
+        self._vk_toolbar = QtGui.QToolBar("VK toolbar", self)
+        self.addToolBar(self._vk_toolbar)
+
+        self._vk_toolbar.addWidget(QtGui.QLabel("Group", self))
+        self._vk_toolbar.addWidget(self._vk.group_edit())
+
+        self._vk_toolbar.addWidget(QtGui.QLabel("Album", self))
+        self._vk_toolbar.addWidget(self._vk.album_edit())
+
+        self._vk_toolbar.addAction(self._vk.upload_action())
 
     def _on_page_load_started(self):
         self._url_edit.setText(self._web_view.url().toString())

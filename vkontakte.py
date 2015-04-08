@@ -24,21 +24,29 @@ class Vkontakte(QtGui.QWidget):
 
         self._album_edit = QtGui.QComboBox(self)
 
-        self._upload_photo_button = QtGui.QPushButton("Upload", self)
-        self._upload_photo_button.clicked.connect(self._upload_photo_to_selected_album)
+        self._upload_action = QtGui.QAction("Upload", self)
+        self._upload_action.triggered.connect(
+            self._upload_photo_to_selected_album
+        )
 
         self._comment_edit = QtGui.QPlainTextEdit(self)
 
         self._image_preview = QtGui.QLabel(self)
 
         layout = QtGui.QVBoxLayout()
-        layout.addWidget(self._group_edit)
-        layout.addWidget(self._album_edit)
-        layout.addWidget(self._upload_photo_button)
         layout.addWidget(self._comment_edit)
         layout.addWidget(self._image_preview)
 
         self.setLayout(layout)
+
+    def group_edit(self):
+        return self._group_edit
+
+    def album_edit(self):
+        return self._album_edit
+
+    def upload_action(self):
+        return self._upload_action
 
     @staticmethod
     def auth_url():
