@@ -9,7 +9,7 @@ class AbstractParser(object):
         self._main_url = main_url
         self._page_url = str()
         self._page_source = str()
-        
+
     def name(self):
         return str()
 

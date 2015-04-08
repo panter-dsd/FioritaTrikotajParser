@@ -5,7 +5,6 @@ import urllib
 
 from PyQt4 import QtCore, QtGui, QtWebKit
 
-from presets_widget import PresetsWidget
 from fiorita_trikotaj_parser import FioritaTrikotajParser
 from love_bunny_parser import LoveBunnyParser
 from magok_parser import MagokParser
@@ -30,16 +29,6 @@ class MainWindow(QtGui.QMainWindow):
         self._web_view.loadStarted.connect(self._on_page_load_started)
         self._web_view.loadFinished.connect(self._on_page_load_finished)
 
-        self._presets_widget = PresetsWidget(self)
-        self._presets_widget.setSizePolicy(
-            QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Maximum
-        )
-        self._presets_widget.activated.connect(
-            lambda url: self._web_view.setUrl(
-                QtCore.QUrl(url)
-            )
-        )
-
         self._load_progress = QtGui.QProgressBar()
         self._load_progress.setVisible(False)
         self._load_progress.setRange(0, 100)
@@ -52,7 +41,6 @@ class MainWindow(QtGui.QMainWindow):
 
         right_layout = QtGui.QVBoxLayout()
         right_layout.addWidget(self._url_edit)
-        right_layout.addWidget(self._presets_widget)
         right_layout.addWidget(self._web_view)
         right_layout.addWidget(self._load_progress)
 
@@ -70,6 +58,29 @@ class MainWindow(QtGui.QMainWindow):
             LoveBunnyParser(),
             MagokParser()
         ]
+
+        self._init_main_menu()
+
+    def _init_main_menu(self):
+        self._main_menu = QtGui.QMenuBar(self)
+        self.setMenuBar(self._main_menu)
+
+        self._main_menu.addMenu(self._make_presets_menu())
+
+    def _make_presets_menu(self):
+        menu = QtGui.QMenu("Presets", self)
+
+        for parser in self._parsers:
+            action = menu.addAction(parser.name())
+            action.setProperty("url", parser.main_url())
+
+            action.triggered.connect(
+                lambda: self._web_view.setUrl(
+                    QtCore.QUrl(self.sender().property("url"))
+                )
+            )
+
+        return menu
 
     def _on_page_load_started(self):
         self._url_edit.setText(self._web_view.url().toString())
