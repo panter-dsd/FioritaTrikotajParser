@@ -84,6 +84,9 @@ class MainWindow(QtGui.QMainWindow):
 
     def _init_browser_toolbar(self):
         self._browser_toolbar = QtGui.QToolBar("Browser bar", self)
+        self.addToolBar(self._browser_toolbar)
+        self.addToolBarBreak()
+
         self._browser_toolbar.addActions(
             [
                 self._web_view.page().action(QtWebKit.QWebPage.Back),
@@ -92,7 +95,6 @@ class MainWindow(QtGui.QMainWindow):
         )
 
         self._browser_toolbar.addWidget(self._url_edit)
-        self.addToolBar(self._browser_toolbar)
 
     def _init_vk_toolbar(self):
         self._vk_toolbar = QtGui.QToolBar("VK toolbar", self)
@@ -100,9 +102,15 @@ class MainWindow(QtGui.QMainWindow):
 
         self._vk_toolbar.addWidget(QtGui.QLabel("Group", self))
         self._vk_toolbar.addWidget(self._vk.group_edit())
+        self._vk.group_edit().setSizePolicy(QtGui.QSizePolicy.Expanding,
+                                     QtGui.QSizePolicy.Preferred)
+        self._vk_toolbar.addSeparator()
 
         self._vk_toolbar.addWidget(QtGui.QLabel("Album", self))
         self._vk_toolbar.addWidget(self._vk.album_edit())
+        self._vk.album_edit().setSizePolicy(QtGui.QSizePolicy.Expanding,
+                                            QtGui.QSizePolicy.Preferred)
+        self._vk_toolbar.addSeparator()
 
         upload_action = self._vk.upload_action()
         upload_action.triggered.connect(self._upload)
