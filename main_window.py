@@ -150,6 +150,7 @@ class MainWindow(QtGui.QMainWindow):
         self._url_edit.setText(url)
 
         if not self._vk.is_auth():
+            self._try_set_login()
             if self._vk.try_read_token(url):
                 self._web_view.setUrl(QtCore.QUrl())
                 self._url_edit.clear()
@@ -284,3 +285,10 @@ class MainWindow(QtGui.QMainWindow):
             image_data = f.read()
             if image_data:
                 self._vk.set_image(image_data)
+
+    def _try_set_login(self):
+        url = "https://oauth.vk.com/authorize"
+        if self._web_view.url().toString().startswith(url):
+            current_frame = self._web_view.page().mainFrame()
+            email_element = current_frame.findFirstElement("input[name=email]")
+            email_element.setAttribute("value", "panter.dsd@gmail.com")
