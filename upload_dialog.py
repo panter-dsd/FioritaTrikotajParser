@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-__author__ = 'konnov@simicon.com'
+__author__ = "panter.dsd@gmail.com"
 
 from PyQt4 import QtCore, QtGui
 
