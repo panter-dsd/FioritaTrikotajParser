@@ -2,11 +2,11 @@
 __author__ = "panter.dsd@gmail.com"
 
 import json
+import re
 
-from PyQt4 import QtCore, QtGui, QtWebKit
+from PyQt4 import QtCore, QtGui
 import vk
 import requests
-import re
 
 
 class Vkontakte(QtCore.QObject):
@@ -20,8 +20,10 @@ class Vkontakte(QtCore.QObject):
 
         self._group_edit = QtGui.QComboBox(parent)
         self._group_edit.activated.connect(self._on_group_changed)
+        self._group_edit.activated.connect(lambda: self.set_upload_enabled())
 
         self._album_edit = QtGui.QComboBox(parent)
+        self._album_edit.activated.connect(lambda: self.set_upload_enabled())
 
         self._upload_action = QtGui.QAction("Upload", parent)
 
@@ -45,6 +47,15 @@ class Vkontakte(QtCore.QObject):
 
     def set_image(self, image: bytes):
         self._image_data = image
+
+    def set_upload_enabled(self, is_enabled=True):
+        self._upload_action.setEnabled(
+            (
+                is_enabled
+                and (self._group_edit.currentIndex() >= 0)
+                and (self._album_edit.currentIndex() >= 0)
+            )
+        )
 
     @staticmethod
     def auth_url():
@@ -118,5 +129,6 @@ class Vkontakte(QtCore.QObject):
 
 
     def _upload_photo(self, url):
-        response = requests.post(url, files={'file': ("image.jpg", self._image_data)})
+        response = requests.post(url, files={
+            'file': ("image.jpg", self._image_data)})
         return json.loads(response.text)

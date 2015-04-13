@@ -103,7 +103,7 @@ class MainWindow(QtGui.QMainWindow):
         self._vk_toolbar.addWidget(QtGui.QLabel("Group", self))
         self._vk_toolbar.addWidget(self._vk.group_edit())
         self._vk.group_edit().setSizePolicy(QtGui.QSizePolicy.Expanding,
-                                     QtGui.QSizePolicy.Preferred)
+                                            QtGui.QSizePolicy.Preferred)
         self._vk_toolbar.addSeparator()
 
         self._vk_toolbar.addWidget(QtGui.QLabel("Album", self))
@@ -138,6 +138,7 @@ class MainWindow(QtGui.QMainWindow):
         self._url_edit.setText(self._web_view.url().toString())
         self._url_edit.setEnabled(False)
         self._load_progress.setVisible(True)
+        self._vk.set_upload_enabled(False)
 
     def _on_page_load_finished(self):
         self._url_edit.setEnabled(True)
@@ -152,6 +153,7 @@ class MainWindow(QtGui.QMainWindow):
                 self._url_edit.clear()
 
         self.work(url)
+        self._vk.set_upload_enabled(True)
 
     def work(self, url: str):
         if self._parsers[0].can_parse(url):
