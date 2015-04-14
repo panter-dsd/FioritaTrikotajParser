@@ -10,6 +10,7 @@ from love_bunny_parser import LoveBunnyParser
 from magok_parser import MagokParser
 from giftman_parser import GiftmanParser
 from sima_land_parser import SimaLandParser
+from magdayana_parser import MagdayanaParser
 from vkontakte import Vkontakte
 from upload_dialog import UploadDialog
 
@@ -56,7 +57,8 @@ class MainWindow(QtGui.QMainWindow):
             LoveBunnyParser(),
             MagokParser(),
             GiftmanParser(),
-            SimaLandParser()
+            SimaLandParser(),
+            MagdayanaParser()
         ]
 
         self._init_main_menu()
@@ -174,6 +176,9 @@ class MainWindow(QtGui.QMainWindow):
         if self._parsers[4].can_parse(url):
             self._work_sima_land()
 
+        if self._parsers[5].can_parse(url):
+            self._work_magdayana()
+
     def _work_fiorita(self):
         page_parser = self._parsers[0]
         page_parser.set_page_url(self._web_view.url().toString())
@@ -273,6 +278,27 @@ class MainWindow(QtGui.QMainWindow):
         minimum_order_quantity = page_parser.extract_minimum_order_quantity()
         if minimum_order_quantity > 1:
             comment.append("Минимум: %s шт" % minimum_order_quantity)
+
+        self._vk.set_comment("\n".join(comment))
+
+        image_url = page_parser.extract_image_url()
+        if image_url:
+            self._download_image(image_url)
+
+    def _work_magdayana(self):
+        page_parser = self._parsers[5]
+        page_parser.set_page_url(self._web_view.url().toString())
+        page_parser.set_page_source(self._web_view.page().mainFrame().toHtml())
+
+        comment = []
+        comment.append(page_parser.page_url())
+        comment.append(page_parser.extract_name())
+
+        comment.append("Цена: %s р." % page_parser.extract_price())
+
+        sizes = page_parser.extract_sizes()
+        if sizes:
+            comment.append("Размер: " + ",".join(sizes))
 
         self._vk.set_comment("\n".join(comment))
 
