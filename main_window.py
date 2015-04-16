@@ -21,6 +21,8 @@ class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         super().__init__(None)
 
+        self.setWindowTitle("Joint purchases assistant")
+
         self._application_settings = ApplicationSettings()
 
         self._web_view = QtWebKit.QWebView(self)

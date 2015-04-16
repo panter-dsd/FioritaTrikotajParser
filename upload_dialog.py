@@ -9,6 +9,8 @@ class UploadDialog(QtGui.QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
 
+        self.setWindowTitle("Upload")
+
         self._comment_edit = QtGui.QPlainTextEdit(self)
 
         self._image_preview = QtGui.QLabel(self)

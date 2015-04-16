@@ -9,6 +9,8 @@ class SettingsDialog(QtGui.QDialog):
     def __init__(self, settings: ApplicationSettings, parent=None):
         super().__init__(parent)
 
+        self.setWindowTitle("Settings")
+
         self._settings = settings
 
         self._login_edit = QtGui.QLineEdit(self._settings.login(), self)
