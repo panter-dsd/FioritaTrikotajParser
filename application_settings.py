@@ -28,6 +28,13 @@ class ApplicationSettings(object):
     def set_password(self, password: str):
         self._config["LOGIN"]["password"] = password
 
+    def last_url(self) -> str:
+        return self._config["HISTORY"]["last_url"]
+
+    def set_last_url(self, url: str):
+        self._config["HISTORY"]["last_url"] = url
+        self.save()
+
     def save(self):
         with open(self._settings_file_name, "w") as f:
             self._config.write(f)
@@ -37,6 +44,10 @@ class ApplicationSettings(object):
 
     def __init_default_config(self):
         self._config["LOGIN"] = {
-            "Login": str(),
-            "Password": str()
+            "login": str(),
+            "password": str()
+        }
+
+        self._config["HISTORY"] = {
+            "last_url": str()
         }

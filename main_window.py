@@ -157,6 +157,7 @@ class MainWindow(QtGui.QMainWindow):
             self._url_edit.clear()
         else:
             self._url_edit.setText(url)
+            self._application_settings.set_last_url(url)
 
     def _on_page_load_started(self):
         self.__update_url_edit()
@@ -174,7 +175,9 @@ class MainWindow(QtGui.QMainWindow):
         if not self._vk.is_auth():
             self._try_set_login()
             if self._vk.try_read_token(url):
-                self._web_view.setUrl(QtCore.QUrl())
+                self._web_view.setUrl(QtCore.QUrl(
+                    self._application_settings.last_url()
+                ))
                 self._url_edit.clear()
 
         self.work(url)
