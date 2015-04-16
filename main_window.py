@@ -28,8 +28,6 @@ class MainWindow(QtGui.QMainWindow):
         self._web_view = QtWebKit.QWebView(self)
 
         self._url_edit = QtGui.QLineEdit(self)
-        self._url_edit.setText(
-            "http://optom.love-bunny.ru/shop/2784/desc/kurtka-stegannaja-krasnaja")
         self._url_edit.returnPressed.connect(
             lambda: self._web_view.setUrl(
                 QtCore.QUrl.fromUserInput(self._url_edit.text())
