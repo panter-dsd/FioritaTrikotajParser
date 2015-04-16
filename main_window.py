@@ -13,11 +13,15 @@ from sima_land_parser import SimaLandParser
 from magdayana_parser import MagdayanaParser
 from vkontakte import Vkontakte
 from upload_dialog import UploadDialog
+from settings_dialog import SettingsDialog
+from application_settings import ApplicationSettings
 
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         super().__init__(None)
+
+        self._application_settings = ApplicationSettings()
 
         self._web_view = QtWebKit.QWebView(self)
 
@@ -70,6 +74,7 @@ class MainWindow(QtGui.QMainWindow):
         self.setMenuBar(self._main_menu)
 
         self._main_menu.addMenu(self._make_presets_menu())
+        self._main_menu.addMenu(self._make_tools_menu())
 
     def _make_presets_menu(self):
         menu = QtGui.QMenu("Presets", self)
@@ -83,6 +88,14 @@ class MainWindow(QtGui.QMainWindow):
                     QtCore.QUrl(self.sender().property("url"))
                 )
             )
+
+        return menu
+
+    def _make_tools_menu(self):
+        menu = QtGui.QMenu("Tools", self)
+
+        settings_action = menu.addAction("Settings")
+        settings_action.triggered.connect(self._settings)
 
         return menu
 
@@ -312,9 +325,17 @@ class MainWindow(QtGui.QMainWindow):
             if image_data:
                 self._vk.set_image(image_data)
 
+    def _settings(self):
+        dialog = SettingsDialog(self._application_settings, self)
+        dialog.exec()
+
     def _try_set_login(self):
         url = "https://oauth.vk.com/authorize"
         if self._web_view.url().toString().startswith(url):
             current_frame = self._web_view.page().mainFrame()
             email_element = current_frame.findFirstElement("input[name=email]")
-            email_element.setAttribute("value", "panter.dsd@gmail.com")
+            email_element.setAttribute("value",
+                                       self._application_settings.login())
+            pass_element = current_frame.findFirstElement("input[name=pass]")
+            pass_element.setAttribute("value",
+                                      self._application_settings.password())
