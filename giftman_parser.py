@@ -68,6 +68,6 @@ class GiftmanParser(AbstractParser):
     def extract_name(self) -> str:
         return re.sub("\s+", " ", self._html_parser.name()).strip()
 
-    def extract_image_url(self) -> str:
+    def extract_main_image_url(self) -> str:
         return self._html_parser.image_url()
 

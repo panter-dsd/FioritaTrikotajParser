@@ -22,5 +22,5 @@ class TestGiftmanParser(TestCase):
         )
         self.assertEqual(parser.extract_price(), "35.74")
         self.assertEqual(parser.extract_minimum_order_quantity(), 1)
-        self.assertEqual(parser.extract_image_url(),
+        self.assertEqual(parser.extract_main_image_url(),
             "http://www.giftman.ru/img/goods/photo/13140-b.1425997021.jpg")

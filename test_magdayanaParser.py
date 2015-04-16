@@ -18,7 +18,7 @@ class TestMagdayanaParser(TestCase):
 
         self.assertEqual(parser.extract_name(), "Бикини")
         self.assertEqual(parser.extract_price(), 685.0)
-        self.assertEqual(parser.extract_image_url(),
+        self.assertEqual(parser.extract_main_image_url(),
             "http://www.magdayana.ru/assets/galleries/1001/1.jpg")
         self.assertEqual(parser.extract_sizes(), ["S", "M", "L"])
 
@@ -33,7 +33,7 @@ class TestMagdayanaParser(TestCase):
 
         self.assertEqual(parser.extract_name(), "Купальник белый")
         self.assertEqual(parser.extract_price(), 509.0)
-        self.assertEqual(parser.extract_image_url(),
+        self.assertEqual(parser.extract_main_image_url(),
             "http://www.magdayana.ru/assets/galleries/641/15.jpg")
         self.assertEqual(parser.extract_sizes(), ["унив. (42-46)"])
 
@@ -50,7 +50,7 @@ class TestMagdayanaParser(TestCase):
             test_data = f.read()
 
         parser.set_page_source(test_data)
-        self.assertEqual(parser.extract_image_url(),
+        self.assertEqual(parser.extract_main_image_url(),
             "http://www.magdayana.ru/assets/galleries/641/15.jpg"
         )
 

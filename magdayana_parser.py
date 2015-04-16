@@ -86,7 +86,7 @@ class MagdayanaParser(AbstractParser):
     def extract_name(self) -> str:
         return self._html_parser.name()
 
-    def extract_image_url(self) -> str:
+    def extract_main_image_url(self) -> str:
         url = self._html_parser.image_url()
 
         if url and not url.startswith(self.main_url()):

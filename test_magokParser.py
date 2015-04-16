@@ -21,4 +21,4 @@ class TestMagokParser0(TestCase):
         self.assertEqual(parser.extract_name(), "Молния джинсовая золото №4 10см замок М-4002 цв.310 черный")
         self.assertEqual(parser.extract_price(), "8,24")
         self.assertEqual(parser.extract_minimum_order_quantity(), 50)
-        self.assertEqual(parser.extract_image_url(), "http://magok.ru/img/preview/big/5/53888.jpg")
+        self.assertEqual(parser.extract_main_image_url(), "http://magok.ru/img/preview/big/5/53888.jpg")

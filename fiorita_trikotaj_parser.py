@@ -77,7 +77,7 @@ class FioritaTrikotajParser(AbstractParser):
         matches = match_re.findall(self.page_source())
         return matches[0] if matches else str()
 
-    def extract_image_url(self):
+    def extract_main_image_url(self):
         start_str = "big_pic"
         image_src_str = "src="
         try:

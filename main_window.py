@@ -223,7 +223,7 @@ class MainWindow(QtGui.QMainWindow):
                        + "р.")
         self._vk.set_comment("\n".join(comment))
 
-        image_url = page_parser.extract_image_url()
+        image_url = page_parser.extract_main_image_url()
         if image_url:
             self._download_image(image_url)
 
@@ -243,7 +243,7 @@ class MainWindow(QtGui.QMainWindow):
                        + "р.")
         self._vk.set_comment("\n".join(comment))
 
-        image_url = page_parser.extract_image_url()
+        image_url = page_parser.extract_main_image_url()
         if image_url:
             self._download_image(image_url)
 
@@ -263,7 +263,7 @@ class MainWindow(QtGui.QMainWindow):
             comment.append("Минимум: %s шт" % minimum_order_quantity)
         self._vk.set_comment("\n".join(comment))
 
-        image_url = page_parser.extract_image_url()
+        image_url = page_parser.extract_main_image_url()
         if image_url:
             self._download_image(image_url)
 
@@ -280,7 +280,7 @@ class MainWindow(QtGui.QMainWindow):
 
         self._vk.set_comment("\n".join(comment))
 
-        image_url = page_parser.extract_image_url()
+        image_url = page_parser.extract_main_image_url()
         if image_url:
             self._download_image(image_url)
 
@@ -301,7 +301,7 @@ class MainWindow(QtGui.QMainWindow):
 
         self._vk.set_comment("\n".join(comment))
 
-        image_url = page_parser.extract_image_url()
+        image_url = page_parser.extract_main_image_url()
         if image_url:
             self._download_image(image_url)
 
@@ -322,7 +322,7 @@ class MainWindow(QtGui.QMainWindow):
 
         self._vk.set_comment("\n".join(comment))
 
-        image_url = page_parser.extract_image_url()
+        image_url = page_parser.extract_main_image_url()
         if image_url:
             self._download_image(image_url)
 

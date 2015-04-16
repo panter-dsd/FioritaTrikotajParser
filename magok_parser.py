@@ -53,7 +53,7 @@ class MagokParser(AbstractParser):
         return result
 
 
-    def extract_image_url(self) -> str:
+    def extract_main_image_url(self) -> str:
         url_re = re.compile("href=\"(.*)\" class=\"highslide\"")
         result = url_re.findall(self.page_source())
         return self.main_url() + result[0] if result else str()

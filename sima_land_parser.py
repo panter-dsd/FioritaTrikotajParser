@@ -83,5 +83,5 @@ class SimaLandParser(AbstractParser):
     def extract_minimum_order_quantity(self) -> int:
         return self._html_parser.minimum_order_quantity()
 
-    def extract_image_url(self) -> str:
+    def extract_main_image_url(self) -> str:
         return self._html_parser.image_url()

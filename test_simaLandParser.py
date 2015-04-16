@@ -23,6 +23,6 @@ class TestSimaLandParser(TestCase):
         self.assertEqual(parser.extract_price(), "20")
         self.assertEqual(parser.extract_minimum_order_quantity(), 10)
         self.assertEqual(
-            parser.extract_image_url(),
+            parser.extract_main_image_url(),
             "https://st-cdn.r.worldssl.net/items/811/811916/0/400.jpg"
         )

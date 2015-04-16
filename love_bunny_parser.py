@@ -53,7 +53,7 @@ class LoveBunnyParser(AbstractParser):
         return prices[0] if prices else str()
 
 
-    def extract_image_url(self):
+    def extract_main_image_url(self):
         match_re = re.compile(
             "url\((http:\/\/optom\.love-bunny\.ru\/_sh\/\d+\/\d+.jpg)"
         )
