@@ -54,5 +54,21 @@ class TestMagdayanaParser(TestCase):
             "http://www.magdayana.ru/assets/galleries/641/15.jpg"
         )
 
+    def test_images_urls(self):
+        test_data = str()
+
+        with open("test_data/magdayana/test2.html", encoding="utf-8") as f:
+            test_data = f.read()
+
+        parser = MagdayanaParser()
+        parser.set_page_source(test_data)
+
+        self.assertEqual(parser.extract_images_urls(),
+            [
+                "http://www.magdayana.ru/assets/galleries/393/1.jpg",
+                "http://www.magdayana.ru/assets/galleries/393/3.jpg",
+                "http://www.magdayana.ru/assets/galleries/393/2.jpg"
+            ]
+        )
 
 

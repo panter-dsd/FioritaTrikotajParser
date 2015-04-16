@@ -15,27 +15,30 @@ class HtmlParser(HTMLParser):
 
         self._tag_stack = []
         self._name = str()
-        self._image_url = str()
+        self._images_urls = []
         self._size_string = str()
 
     def feed(self, data):
-        self._image_url = str()
+        self._images_urls = []
         super().feed(data)
 
     def name(self):
         return self._name
 
     def image_url(self):
-        return self._image_url
+        return self._images_urls[0] if self._images_urls else str()
+
+    def images_urls(self):
+        return self._images_urls
 
     def size_string(self):
         return self._size_string
 
     def handle_starttag(self, tag, attrs):
-        if (not self._image_url
-                and tag == "a"
-                and ("rel", "example_group") in attrs):
-            self._image_url = attrs[1][1]
+        if tag == "a" and ("rel", "example_group") in attrs:
+            url = attrs[1][1]
+            if url not in self._images_urls:
+                self._images_urls.append(url)
 
         self._tag_stack.append((tag, attrs))
 
@@ -93,6 +96,9 @@ class MagdayanaParser(AbstractParser):
             url = self.main_url() + url
 
         return url
+
+    def extract_images_urls(self) -> list:
+        return self._html_parser.images_urls()
 
     def __try_parse_sizes_list(self, sizes_str: str) -> list:
         result = sizes_str.split(",")
