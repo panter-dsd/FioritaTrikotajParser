@@ -311,7 +311,6 @@ class MainWindow(QtGui.QMainWindow):
         page_parser.set_page_source(self._web_view.page().mainFrame().toHtml())
 
         comment = []
-        comment.append(page_parser.page_url())
         comment.append(page_parser.extract_name())
 
         comment.append("Цена: %s р." % page_parser.extract_price())
