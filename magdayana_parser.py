@@ -18,6 +18,10 @@ class HtmlParser(HTMLParser):
         self._image_url = str()
         self._size_string = str()
 
+    def feed(self, data):
+        self._image_url = str()
+        super().feed(data)
+
     def name(self):
         return self._name
 
