@@ -151,8 +151,15 @@ class MainWindow(QtGui.QMainWindow):
                 )
                 QtCore.QTimer.singleShot(0, self._upload)
 
+    def __update_url_edit(self):
+        url = self._web_view.url().toString()
+        if "oauth.vk.com" in url:
+            self._url_edit.clear()
+        else:
+            self._url_edit.setText(url)
+
     def _on_page_load_started(self):
-        self._url_edit.setText(self._web_view.url().toString())
+        self.__update_url_edit()
         self._url_edit.setEnabled(False)
         self._load_progress.setVisible(True)
         self._vk.set_upload_enabled(False)
@@ -162,7 +169,7 @@ class MainWindow(QtGui.QMainWindow):
         self._load_progress.setVisible(False)
 
         url = self._web_view.url().toString()
-        self._url_edit.setText(url)
+        self.__update_url_edit()
 
         if not self._vk.is_auth():
             self._try_set_login()
