@@ -6,12 +6,12 @@ from unittest import TestCase
 from magok_parser import MagokParser
 
 
-class TestMagokParser0(TestCase):
+class TestMagokParser(TestCase):
     def setUp(self):
         super().setUp()
         self._test_data = str()
 
-        with open("test_data/magok/test0.html") as f:
+        with open("test_data/magok/test0.html", "r", encoding="utf-8") as f:
             self._test_data = f.read()
 
     def test_0(self):
