@@ -11,10 +11,8 @@ class ApplicationSettings(object):
         super().__init__()
 
         self._config = ConfigParser()
-        try:
-            self.__load()
-        except FileNotFoundError:
-            self.__init_default_config()
+        self.__init_default_config()
+        self.__load()
 
     def login(self) -> str:
         return self._config["LOGIN"]["login"]
