@@ -19,5 +19,5 @@ setup(
     author_email='panter.dsd@gmail.com',
     description='',
     options = {"build_exe": build_exe_options},
-    executables = [Executable("__main__.py", base=base)]
+    executables = [Executable("__main__.py", base=base, targetName="jointpurchasesassistant.exe")]
 )
