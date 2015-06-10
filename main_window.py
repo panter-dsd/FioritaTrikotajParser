@@ -11,6 +11,7 @@ from magok_parser import MagokParser
 from giftman_parser import GiftmanParser
 from sima_land_parser import SimaLandParser
 from magdayana_parser import MagdayanaParser
+from stok_market_parser import StokMarketParser
 from vkontakte import Vkontakte
 from upload_dialog import UploadDialog
 from settings_dialog import SettingsDialog
@@ -62,7 +63,8 @@ class MainWindow(QtGui.QMainWindow):
             MagokParser(),
             GiftmanParser(),
             SimaLandParser(),
-            MagdayanaParser()
+            MagdayanaParser(),
+            StokMarketParser()
         ]
 
         self._init_main_menu()
@@ -202,6 +204,9 @@ class MainWindow(QtGui.QMainWindow):
         if self._parsers[5].can_parse(url):
             self._work_magdayana()
 
+        if self._parsers[6].can_parse(url):
+            self._work_stock_market()
+
     def _work_fiorita(self):
         page_parser = self._parsers[0]
         page_parser.set_page_url(self._web_view.url().toString())
@@ -310,6 +315,26 @@ class MainWindow(QtGui.QMainWindow):
 
     def _work_magdayana(self):
         page_parser = self._parsers[5]
+        page_parser.set_page_url(self._web_view.url().toString())
+        page_parser.set_page_source(self._web_view.page().mainFrame().toHtml())
+
+        comment = []
+        comment.append(page_parser.extract_name())
+
+        comment.append("Цена: %s р." % page_parser.extract_price())
+
+        sizes = page_parser.extract_sizes()
+        if sizes:
+            comment.append("Размер: " + ",".join(sizes))
+
+        self._vk.set_comment("\n".join(comment))
+
+        image_url = page_parser.extract_main_image_url()
+        if image_url:
+            self._download_image(image_url)
+
+    def _work_stok_market(self):
+        page_parser = self._parsers[6]
         page_parser.set_page_url(self._web_view.url().toString())
         page_parser.set_page_source(self._web_view.page().mainFrame().toHtml())
 
