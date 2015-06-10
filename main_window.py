@@ -205,7 +205,7 @@ class MainWindow(QtGui.QMainWindow):
             self._work_magdayana()
 
         if self._parsers[6].can_parse(url):
-            self._work_stock_market()
+            self._work_stok_market()
 
     def _work_fiorita(self):
         page_parser = self._parsers[0]

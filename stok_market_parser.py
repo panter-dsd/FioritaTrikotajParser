@@ -2,7 +2,6 @@
 __author__ = "panter.dsd@gmail.com"
 
 import re
-
 from html.parser import HTMLParser
 
 from abstract_parser import AbstractParser
@@ -16,7 +15,7 @@ class HtmlParser(HTMLParser):
         self._name = str()
         self._price = str()
         self._image_url = str()
-        self._minimum_order_quantity = 0
+        self._sizes = []
 
     def name(self):
         return self._name
@@ -27,8 +26,8 @@ class HtmlParser(HTMLParser):
     def image_url(self):
         return self._image_url
 
-    def minimum_order_quantity(self):
-        return self._minimum_order_quantity
+    def sizes(self):
+        return self._sizes
 
     def handle_starttag(self, tag, attrs):
         self._tag_stack.append((tag, attrs))
@@ -53,22 +52,22 @@ class HtmlParser(HTMLParser):
             self._name = data
             self.__remove_number_from_name()
 
-        if (current_tag == "div") and (("class", "price") in current_attrs) and not self._price:
+        if (current_tag == "div") and (
+            ("class", "price") in current_attrs) and not self._price:
             self._price = self.__extract_price(data)
 
-        if current_tag == "span":
-            if (current_attrs
-                and current_attrs[0]
-                and (current_attrs[0][0] == "data-cart-min")):
-                self._minimum_order_quantity = int(data)
+        if current_tag == "label":
+            size = self.__try_extract_size(current_attrs, data)
+            if size:
+                self._sizes.append(size)
 
     def __remove_number_from_name(self):
         splitted_name = self._name.split(' ')
         if splitted_name:
             try:
                 int(splitted_name[-1])
-                self._name = " ".join(splitted_name[:-1])
-            except TypeError:
+                self._name = " ".join(splitted_name[:-1]).strip()
+            except (TypeError, ValueError):
                 pass
 
     @staticmethod
@@ -76,6 +75,10 @@ class HtmlParser(HTMLParser):
         price_re = re.compile("(\d+\.\d+)")
         match = price_re.search(data)
         return match.group(0) if match else str()
+
+    @staticmethod
+    def __try_extract_size(attrs, data):
+        return data.strip() if attrs and (attrs[0][0] == "for") else str()
 
 
 class StokMarketParser(AbstractParser):
@@ -85,6 +88,7 @@ class StokMarketParser(AbstractParser):
         self._html_parser = HtmlParser()
 
     def set_page_source(self, text: str):
+        self._html_parser = HtmlParser()
         self._html_parser.feed(text)
         super().set_page_source(text)
 
@@ -102,3 +106,6 @@ class StokMarketParser(AbstractParser):
 
     def extract_main_image_url(self) -> str:
         return self._html_parser.image_url()
+
+    def extract_sizes(self) -> list:
+        return self._html_parser.sizes()
