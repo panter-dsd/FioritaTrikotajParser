@@ -58,12 +58,6 @@ class MainWindow(QtGui.QMainWindow):
         self.setCentralWidget(central_widget)
 
         self._parsers = [
-            FioritaTrikotajParser(),
-            LoveBunnyParser(),
-            MagokParser(),
-            GiftmanParser(),
-            SimaLandParser(),
-            MagdayanaParser(),
             StokMarketParser()
         ]
 
@@ -187,24 +181,6 @@ class MainWindow(QtGui.QMainWindow):
 
     def work(self, url: str):
         if self._parsers[0].can_parse(url):
-            self._work_fiorita()
-
-        if self._parsers[1].can_parse(url):
-            self._work_love_bunny()
-
-        if self._parsers[2].can_parse(url):
-            self._work_magok()
-
-        if self._parsers[3].can_parse(url):
-            self._work_giftman()
-
-        if self._parsers[4].can_parse(url):
-            self._work_sima_land()
-
-        if self._parsers[5].can_parse(url):
-            self._work_magdayana()
-
-        if self._parsers[6].can_parse(url):
             self._work_stok_market()
 
     def _work_fiorita(self):
@@ -334,7 +310,7 @@ class MainWindow(QtGui.QMainWindow):
             self._download_image(image_url)
 
     def _work_stok_market(self):
-        page_parser = self._parsers[6]
+        page_parser = self._parsers[0]
         page_parser.set_page_url(self._web_view.url().toString())
         page_parser.set_page_source(self._web_view.page().mainFrame().toHtml())
 
